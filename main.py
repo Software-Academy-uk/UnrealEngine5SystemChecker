@@ -94,5 +94,6 @@ def create_gui():
 
     root.mainloop()
 
-# Run the GUI
-create_gui()
+if __name__ == "__main__":
+    # Run the GUI
+    create_gui()
