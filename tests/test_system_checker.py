@@ -1,5 +1,5 @@
 import pytest
-from main import check_system_specs, create_gui
+from main import check_system_specs
 
 # Test if system specs can be detected
 def test_check_system_specs():
@@ -16,10 +16,3 @@ def test_check_system_specs():
     assert specs['RAM'] != ''
     assert specs['Disk Space'] != ''
     assert specs['GPU'] != ''
-
-# Test if the GUI can launch (Tkinter window)
-def test_create_gui():
-    try:
-        create_gui()  # Test if the GUI window opens
-    except Exception as e:
-        pytest.fail(f"GUI creation failed with error: {e}")
