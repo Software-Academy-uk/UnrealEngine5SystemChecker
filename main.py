@@ -1,6 +1,6 @@
+from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import messagebox
-
 import psutil
 import platform
 import shutil
@@ -84,13 +84,45 @@ def run_gui_system_check():
 # Creating the GUI window
 def create_gui():
     root = tk.Tk()
-    root.title("Unreal Engine 5 System Checker")
+    root.title("Software Academy - Unreal Engine 5 System Checker")
 
-    label = tk.Label(root, text="Click the button to check if your system can run Unreal Engine 5.")
-    label.pack(pady=10)
+    # Load and set the favicon (small logo) image
+    favicon = Image.open("images/software-academy-favicon_32x32.png")
+    favicon = favicon.resize((32, 32))
+    favicon = ImageTk.PhotoImage(favicon)
 
-    check_button = tk.Button(root, text="Check System", command=run_gui_system_check)
+    # Set window icon (favicon)
+    root.iconphoto(False, favicon)
+
+    # Use the academy color for styling
+    academy_color = "#00aeff"
+
+    # Create a frame for better alignment and cleaner layout
+    frame = tk.Frame(root, bg="white")
+    frame.pack(padx=20, pady=20)
+
+    # Display the full logo in the window
+    logo = Image.open("images/software-academy-logo-image.png")
+    logo = ImageTk.PhotoImage(logo)
+    
+    logo_label = tk.Label(frame, image=logo, bg="white")
+    logo_label.image = logo  # Keep a reference to avoid garbage collection
+    logo_label.pack(pady=10)
+
+    # Title text
+    title = tk.Label(frame, text="Unreal Engine 5 System Checker", font=("Helvetica", 16, "bold"), fg=academy_color, bg="white")
+    title.pack(pady=10)
+
+    # Instructions text
+    instructions = tk.Label(frame, text="Click the button below to check if your system meets Unreal Engine 5 requirements.", font=("Helvetica", 12), bg="white")
+    instructions.pack(pady=10)
+
+    # Check system button
+    check_button = tk.Button(frame, text="Check System", command=run_gui_system_check, font=("Helvetica", 12), bg=academy_color, fg="white")
     check_button.pack(pady=20)
+
+    # Set a white background for the entire window
+    root.configure(bg="white")
 
     root.mainloop()
 
