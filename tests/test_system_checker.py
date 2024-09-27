@@ -1,6 +1,8 @@
 import pytest
 from unittest.mock import patch
 
+from main import install_python_pygame
+
 # Fixture to mock check_system_specs and reset for every test
 @pytest.fixture
 def mock_check_system_specs():
@@ -81,3 +83,27 @@ def test_fail_ue5_fail_ue4(mock_check_system_specs):
     }
     output = test_unreal_engine(is_testing=True)
     assert output == "No, your system cannot run Unreal Engine 4 or 5."
+
+# Test auto-install of PyGame when Python is installed
+@pytest.mark.python_pygame
+@patch('main.check_python_installed', return_value=True)
+@patch('main.subprocess.run')
+@patch('main.messagebox.showinfo')
+def test_install_pygame(mock_messagebox, mock_subprocess, mock_check_python_installed):
+    install_python_pygame()
+    
+    # Check if PyGame was installed via subprocess
+    mock_subprocess.assert_called_with([mock_subprocess.call_args[0][0], "-m", "pip", "install", "pygame"], check=True)
+    mock_messagebox.assert_called_with("PyGame Installation", "PyGame has been successfully installed!")
+
+# Test behavior when Python is not installed
+@pytest.mark.no_python_pygame
+@patch('main.check_python_installed', return_value=False)
+@patch('main.webbrowser.open')
+@patch('main.messagebox.showinfo')
+def test_install_python_not_found(mock_messagebox, mock_webbrowser, mock_check_python_installed):
+    install_python_pygame()
+
+    # Check that the Python download page was opened
+    mock_webbrowser.assert_called_once_with("https://www.python.org/downloads/")
+    mock_messagebox.assert_called_once_with("Python Not Found", "Python is not installed on your system. Please install Python first.")

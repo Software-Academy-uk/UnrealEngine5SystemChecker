@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import messagebox, scrolledtext
 import webbrowser
 from PIL import Image, ImageTk
+import subprocess
+import sys
 
 from system_check import check_system_specs
 from validation import validate_specs
@@ -92,12 +94,38 @@ def test_unreal_engine(detailed_button, detailed_widget):
     detailed_button.pack(pady=10)
 
 
-# Function to install Python and PyGame
+# Function to check if Python is installed and install PyGame
 def install_python_pygame():
-    messagebox.showinfo("Python & PyGame Installation", "Opening links to download Python and PyGame...")
-    # Open download links in the web browser
-    webbrowser.open("https://www.python.org/downloads/")
-    webbrowser.open("https://www.pygame.org/wiki/GettingStarted")
+    # Check if Python is installed
+    python_installed = check_python_installed()
+
+    if python_installed:
+        messagebox.showinfo("Python Found", "Python is installed on your system. Proceeding to install PyGame.")
+        # Auto-install PyGame using pip
+        install_pygame()
+    else:
+        messagebox.showinfo("Python Not Found", "Python is not installed on your system. Please install Python first.")
+        # Open the Python download page
+        webbrowser.open("https://www.python.org/downloads/")
+        
+# Function to check if Python is installed
+def check_python_installed():
+    try:
+        # Check if Python can be called from the command line
+        subprocess.run([sys.executable, '--version'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return True
+    except Exception as e:
+        return False
+
+# Function to install PyGame using pip
+def install_pygame():
+    try:
+        # Run the pip install command for pygame
+        subprocess.run([sys.executable, "-m", "pip", "install", "pygame"], check=True)
+        messagebox.showinfo("PyGame Installation", "PyGame has been successfully installed!")
+    except subprocess.CalledProcessError as e:
+        messagebox.showerror("Installation Failed", "Failed to install PyGame. Please try manually.")
+        webbrowser.open("https://www.pygame.org/wiki/GettingStarted")
 
 # Function to toggle the visibility of the detailed view and update button text
 def toggle_detailed_view(detailed_widget, details_button):
