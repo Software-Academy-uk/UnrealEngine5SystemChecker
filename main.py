@@ -36,7 +36,7 @@ RECOMMENDED_REQUIREMENTS_UE4 = {
 }
 
 # Function to display Unreal Engine test results in a messagebox
-def test_unreal_engine():
+def test_unreal_engine(is_testing=False):
     specs = check_system_specs()
 
     # First, check against Unreal Engine 5 recommended requirements
@@ -57,8 +57,11 @@ def test_unreal_engine():
             else:
                 output = "No, your system cannot run Unreal Engine 4 or 5."
 
-    # Display results in a messagebox
-    messagebox.showinfo("System Check Result", output)
+    # If running tests, return the output instead of showing a messagebox
+    if is_testing:
+        return output
+    else:
+        messagebox.showinfo("System Check Result", output)
 
 # Function to install Python and PyGame
 def install_python_pygame():

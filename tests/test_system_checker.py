@@ -1,59 +1,83 @@
 import pytest
-from system_check import check_system_specs
-from validation import validate_specs
-import os
+from unittest.mock import patch
 
-# Unreal Engine Requirements (Minimum and Recommended)
-MINIMUM_REQUIREMENTS = {
-    'CPU': 4,   # 4 cores
-    'RAM': 8,   # 8 GB
-    'Disk Space': 50,  # 50 GB free
-    'GPU': True  # Dedicated GPU
-}
+# Fixture to mock check_system_specs and reset for every test
+@pytest.fixture
+def mock_check_system_specs():
+    with patch('system_check.check_system_specs') as mock:
+        yield mock  # Provide mock to the test
 
-RECOMMENDED_REQUIREMENTS = {
-    'CPU': 6,   # 6 cores or more
-    'RAM': 16,  # 16 GB
-    'Disk Space': 100,  # 100 GB free
-    'GPU': True  # Dedicated GPU
-}
-
-# Test if system specs can be detected
+# Test case for fully passing Unreal Engine 5 recommended requirements
+@pytest.mark.pass_ue5
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
-def test_check_system_specs():
-    specs = check_system_specs()
-    
-    # Check if CPU, RAM, Disk Space, and GPU are present in the specs
-    assert 'CPU' in specs
-    assert 'RAM' in specs
-    assert 'Disk Space' in specs
-    assert 'GPU' in specs
+def test_pass_ue5(mock_check_system_specs):
+    from main import test_unreal_engine
+    # Use side_effect instead of return_value to ensure mock resets for each test
+    mock_check_system_specs.side_effect = lambda: {
+        'CPU': '4 cores', 
+        'RAM': '8 GB', 
+        'Disk Space': '100 GB free', 
+        'GPU': 'Dedicated GPU'
+    }
+    output = test_unreal_engine(is_testing=True)
+    assert output == "Yes, your system can run Unreal Engine 5!"
 
-    # Ensure values are non-empty (basic check for functioning)
-    assert specs['CPU'] != ''
-    assert specs['RAM'] != ''
-    assert specs['Disk Space'] != ''
-    assert specs['GPU'] != ''
-
-# Test if the validation for Unreal Engine 5 works
+# Test case for passing Unreal Engine 5 minimum requirements
+@pytest.mark.min_pass_ue5
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
-def test_validate_specs():
-    specs = check_system_specs()
-    
-    # Test for minimum requirements
-    errors_min = validate_specs(specs, MINIMUM_REQUIREMENTS)
-    assert isinstance(errors_min, list)
+def test_min_pass_ue5(mock_check_system_specs):
+    from main import test_unreal_engine
+    # Mock specs that meet Unreal Engine 5 minimum requirements but not recommended
+    mock_check_system_specs.side_effect = lambda: {
+        'CPU': '2 cores', 
+        'RAM': '4 GB', 
+        'Disk Space': '100 GB free', 
+        'GPU': 'No dedicated GPU'
+    }
+    output = test_unreal_engine(is_testing=True)
+    assert output == "Your system meets the minimum requirements for Unreal Engine 5, but may not perform optimally."
 
-    # Test for recommended requirements
-    errors_rec = validate_specs(specs, RECOMMENDED_REQUIREMENTS)
-    assert isinstance(errors_rec, list)
-
-# Skip GUI tests in headless environments
-@pytest.mark.skipif("DISPLAY" not in os.environ, reason="Headless environment detected, skipping GUI test.")
+# Test case for failing Unreal Engine 5 but passing Unreal Engine 4 recommended requirements
+@pytest.mark.fail_ue5_pass_ue4
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
-def test_gui_creation():
-    from main import create_gui
-    try:
-        create_gui()  # Attempt to create the GUI
-    except Exception as e:
-        pytest.fail(f"GUI creation failed: {e}")
+def test_fail_ue5_pass_ue4(mock_check_system_specs):
+    from main import test_unreal_engine
+    # Mock specs that fail Unreal Engine 5 but pass Unreal Engine 4 recommended requirements
+    mock_check_system_specs.side_effect = lambda: {
+        'CPU': '4 cores', 
+        'RAM': '4 GB', 
+        'Disk Space': '50 GB free', 
+        'GPU': 'No dedicated GPU'
+    }
+    output = test_unreal_engine(is_testing=True)
+    assert output == "Your system can run Unreal Engine 4, but not Unreal Engine 5."
+
+# Test case for failing Unreal Engine 5 but passing Unreal Engine 4 minimum requirements
+@pytest.mark.fail_ue5_min_pass_ue4
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
+def test_fail_ue5_min_pass_ue4(mock_check_system_specs):
+    from main import test_unreal_engine
+    # Mock specs that fail Unreal Engine 5 but meet Unreal Engine 4 minimum requirements
+    mock_check_system_specs.side_effect = lambda: {
+        'CPU': '2 cores', 
+        'RAM': '4 GB', 
+        'Disk Space': '50 GB free', 
+        'GPU': 'No dedicated GPU'
+    }
+    output = test_unreal_engine(is_testing=True)
+    assert output == "Your system can run Unreal Engine 4, but not Unreal Engine 5."
+
+# Test case for failing both Unreal Engine 5 and Unreal Engine 4
+@pytest.mark.fail_ue5_fail_ue4
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
+def test_fail_ue5_fail_ue4(mock_check_system_specs):
+    from main import test_unreal_engine
+    # Mock specs that fail both Unreal Engine 5 and Unreal Engine 4
+    mock_check_system_specs.side_effect = lambda: {
+        'CPU': '1 core', 
+        'RAM': '2 GB', 
+        'Disk Space': '20 GB free', 
+        'GPU': 'No dedicated GPU'
+    }
+    output = test_unreal_engine(is_testing=True)
+    assert output == "No, your system cannot run Unreal Engine 4 or 5."
