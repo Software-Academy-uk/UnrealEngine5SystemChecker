@@ -6,19 +6,33 @@ from PIL import Image, ImageTk
 from system_check import check_system_specs
 from validation import validate_specs
 
-# Unreal Engine Requirements (Minimum and Recommended)
-MINIMUM_REQUIREMENTS = {
-    'CPU': 4,   # 4 cores
-    'RAM': 8,   # 8 GB
-    'Disk Space': 50,  # 50 GB free
-    'GPU': True  # Dedicated GPU
+# Unreal Engine Requirements (Minimum, Recommended, and Unreal Engine 4)
+MINIMUM_REQUIREMENTS_UE5 = {
+    'CPU': 2,   # 2 cores
+    'RAM': 4,   # 4 GB
+    'Disk Space': 100,  # 100 GB free
+    'GPU': False  # Dedicated GPU not required
 }
 
-RECOMMENDED_REQUIREMENTS = {
-    'CPU': 6,   # 6 cores or more
-    'RAM': 16,  # 16 GB
+RECOMMENDED_REQUIREMENTS_UE5 = {
+    'CPU': 4,   # 4 cores or more
+    'RAM': 8,   # 8 GB
     'Disk Space': 100,  # 100 GB free
-    'GPU': True  # Dedicated GPU
+    'GPU': True  # Dedicated GPU required
+}
+
+MINIMUM_REQUIREMENTS_UE4 = {
+    'CPU': 2,   # 2 cores
+    'RAM': 4,   # 4 GB
+    'Disk Space': 50,   # 50 GB free
+    'GPU': False  # Dedicated GPU not required
+}
+
+RECOMMENDED_REQUIREMENTS_UE4 = {
+    'CPU': 4,   # 4 cores or more
+    'RAM': 8,   # 8 GB
+    'Disk Space': 50,   # 50 GB free
+    'GPU': True  # Dedicated GPU required
 }
 
 # Function to display Unreal Engine test results in a messagebox
@@ -26,19 +40,20 @@ def test_unreal_engine():
     specs = check_system_specs()
 
     # First, check against Unreal Engine 5 recommended requirements
-    validation_errors = validate_specs(specs, RECOMMENDED_REQUIREMENTS)
+    validation_errors = validate_specs(specs, RECOMMENDED_REQUIREMENTS_UE5)
 
     if not validation_errors:
         output = "Yes, your system can run Unreal Engine 5!"
     else:
-        # If recommended fails, check against minimum
-        validation_errors = validate_specs(specs, MINIMUM_REQUIREMENTS)
+        # If recommended fails, check against minimum UE5
+        validation_errors = validate_specs(specs, MINIMUM_REQUIREMENTS_UE5)
         if not validation_errors:
             output = "Your system meets the minimum requirements for Unreal Engine 5, but may not perform optimally."
         else:
-            # If minimum requirements fail, suggest Unreal Engine 4
-            if specs['RAM'] >= 8:
-                output = "Your system doesn't meet Unreal Engine 5 requirements, but you can run Unreal Engine 4."
+            # If UE5 minimum requirements fail, check for Unreal Engine 4
+            validation_errors_ue4 = validate_specs(specs, MINIMUM_REQUIREMENTS_UE4)
+            if not validation_errors_ue4:
+                output = "Your system can run Unreal Engine 4, but not Unreal Engine 5."
             else:
                 output = "No, your system cannot run Unreal Engine 4 or 5."
 
