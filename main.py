@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, scrolledtext
 import webbrowser
 from PIL import Image, ImageTk
 
@@ -35,8 +35,8 @@ RECOMMENDED_REQUIREMENTS_UE4 = {
     'GPU': True  # Dedicated GPU required
 }
 
-# Function to display Unreal Engine test results in a messagebox
-def test_unreal_engine(is_testing=False):
+# Function to display Unreal Engine test results and show detailed information
+def test_unreal_engine(detailed_button, detailed_widget):
     specs = check_system_specs()
 
     # First, check against Unreal Engine 5 recommended requirements
@@ -57,11 +57,35 @@ def test_unreal_engine(is_testing=False):
             else:
                 output = "No, your system cannot run Unreal Engine 4 or 5."
 
-    # If running tests, return the output instead of showing a messagebox
-    if is_testing:
-        return output
-    else:
-        messagebox.showinfo("System Check Result", output)
+    # Show result in messagebox
+    messagebox.showinfo("System Check Result", output)
+
+    # Generate detailed information about system specs and validation
+    detailed_info = "--- Current System Specs ---\n"
+    for key, value in specs.items():
+        detailed_info += f"{key}: {value}\n"
+
+    detailed_info += "\n--- Unreal Engine 5 Requirements ---\n"
+    detailed_info += f"Minimum Requirements: {MINIMUM_REQUIREMENTS_UE5}\n"
+    detailed_info += f"Recommended Requirements: {RECOMMENDED_REQUIREMENTS_UE5}\n"
+    detailed_info += "\n--- Unreal Engine 4 Requirements ---\n"
+    detailed_info += f"Minimum Requirements: {MINIMUM_REQUIREMENTS_UE4}\n"
+    detailed_info += f"Recommended Requirements: {RECOMMENDED_REQUIREMENTS_UE4}\n"
+
+    # Add any validation errors to the detailed info
+    if validation_errors:
+        detailed_info += "\n--- Validation Errors ---\n"
+        for error in validation_errors:
+            detailed_info += f"{error}\n"
+
+    # Update the detailed widget with system specs and errors
+    detailed_widget.config(state=tk.NORMAL)  # Enable editing to update content
+    detailed_widget.delete(1.0, tk.END)  # Clear previous content
+    detailed_widget.insert(tk.INSERT, detailed_info)  # Add new content
+    detailed_widget.config(state=tk.DISABLED)  # Disable editing
+
+    # Show the "Show Advanced Information" button after the test is run
+    detailed_button.pack(pady=10)
 
 # Function to install Python and PyGame
 def install_python_pygame():
@@ -69,6 +93,15 @@ def install_python_pygame():
     # Open download links in the web browser
     webbrowser.open("https://www.python.org/downloads/")
     webbrowser.open("https://www.pygame.org/wiki/GettingStarted")
+
+# Function to toggle the visibility of the detailed view and update button text
+def toggle_detailed_view(detailed_widget, details_button):
+    if detailed_widget.winfo_viewable():
+        detailed_widget.pack_forget()  # Hide the detailed view
+        details_button.config(text="Show Advanced Information")  # Update button text to "Show"
+    else:
+        detailed_widget.pack(pady=10)  # Show the detailed view
+        details_button.config(text="Hide Advanced Information")  # Update button text to "Hide"
 
 # Creating the GUI window
 def create_gui():
@@ -113,12 +146,19 @@ def create_gui():
     button_frame.pack(pady=10)
 
     # Button to check Unreal Engine system requirements
-    check_button = tk.Button(button_frame, text="Test hardware for Unreal Engine", command=test_unreal_engine, font=("Helvetica", 12), bg=academy_color, fg="white")
+    check_button = tk.Button(button_frame, text="Test hardware for Unreal Engine", command=lambda: test_unreal_engine(details_button, detailed_widget), font=("Helvetica", 12), bg=academy_color, fg="white")
     check_button.pack(side=tk.LEFT, padx=10)
 
     # Button to install Python and PyGame
     python_button = tk.Button(button_frame, text="Install Python & PyGame", command=install_python_pygame, font=("Helvetica", 12), bg=academy_color, fg="white")
     python_button.pack(side=tk.LEFT, padx=10)
+
+    # Detailed output box for system specs and validation results (initially hidden)
+    detailed_widget = scrolledtext.ScrolledText(frame, wrap=tk.WORD, width=60, height=15, state=tk.DISABLED)
+    
+    # Button to show or hide detailed information (initially hidden)
+    details_button = tk.Button(frame, text="Show Advanced Information", command=lambda: toggle_detailed_view(detailed_widget, details_button), font=("Helvetica", 12), bg=academy_color, fg="white")
+    details_button.pack_forget()  # Initially hidden
 
     # Set a white background for the entire window
     root.configure(bg="white")
