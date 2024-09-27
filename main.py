@@ -107,6 +107,9 @@ def install_python_pygame():
         messagebox.showinfo("Python Not Found", "Python is not installed on your system. Please install Python first.")
         # Open the Python download page
         webbrowser.open("https://www.python.org/downloads/")
+        messagebox.showinfo("How to video", "Here is a short video on how to install Python.")
+        # Open the YouTube video
+        webbrowser.open("https://www.youtube.com/watch?v=cTwD_LC5F9A")
         
 # Function to check if Python is installed
 def check_python_installed():
