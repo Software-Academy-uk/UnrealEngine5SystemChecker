@@ -37,8 +37,9 @@ RECOMMENDED_REQUIREMENTS_UE4 = {
     'GPU': True  # Dedicated GPU required
 }
 
-# Function to display Unreal Engine test results and show detailed information
+
 def test_unreal_engine(detailed_button, detailed_widget):
+    """Display Unreal Engine test results and show detailed information."""
     specs = check_system_specs()
     ue4_fallback = False  # To track if UE4 is selected as fallback
     detailed_info = "--- Current System Specs ---\n"
@@ -60,7 +61,8 @@ def test_unreal_engine(detailed_button, detailed_widget):
         # If recommended fails, check against minimum UE5
         validation_errors = validate_specs(specs, MINIMUM_REQUIREMENTS_UE5)
         if not validation_errors:
-            output = "Your system meets the minimum requirements for Unreal Engine 5, but may not perform optimally."
+            output = ("Your system meets the minimum requirements for Unreal Engine 5, "
+                      "but may not perform optimally.")
         else:
             # If UE5 minimum requirements fail, check for Unreal Engine 4
             validation_errors_ue4 = validate_specs(specs, MINIMUM_REQUIREMENTS_UE4)
@@ -82,7 +84,8 @@ def test_unreal_engine(detailed_button, detailed_widget):
 
     # Show UE4 fallback in the detailed info if selected
     if ue4_fallback:
-        detailed_info += "\n--- Unreal Engine 4 Fallback ---\nYour system cannot run Unreal Engine 5, but it can run Unreal Engine 4.\n"
+        detailed_info += ("\n--- Unreal Engine 4 Fallback ---\n"
+                          "Your system cannot run Unreal Engine 5, but it can run Unreal Engine 4.\n")
 
     # Update the detailed widget with system specs and errors
     detailed_widget.config(state=tk.NORMAL)  # Enable editing to update content
@@ -94,44 +97,43 @@ def test_unreal_engine(detailed_button, detailed_widget):
     detailed_button.pack(pady=10)
 
 
-# Function to check if Python is installed and install PyGame
 def install_python_pygame():
-    # Check if Python is installed
+    """Check if Python is installed and install PyGame."""
     python_installed = check_python_installed()
 
     if python_installed:
-        messagebox.showinfo("Python Found", "Python is installed on your system. Proceeding to install PyGame.")
-        # Auto-install PyGame using pip
-        install_pygame()
+        messagebox.showinfo("Python Found", "Python is installed on your system. "
+                                            "Proceeding to install PyGame.")
+        install_pygame()  # Auto-install PyGame using pip
     else:
-        messagebox.showinfo("Python Not Found", "Python is not installed on your system. Please install Python first.")
-        # Open the Python download page
+        messagebox.showinfo("Python Not Found", "Python is not installed on your system. "
+                                                "Please install Python first.")
         webbrowser.open("https://www.python.org/downloads/")
         messagebox.showinfo("How to video", "Here is a short video on how to install Python.")
-        # Open the YouTube video
         webbrowser.open("https://www.youtube.com/watch?v=cTwD_LC5F9A")
-        
-# Function to check if Python is installed
+
+
 def check_python_installed():
+    """Check if Python is installed."""
     try:
-        # Check if Python can be called from the command line
         subprocess.run([sys.executable, '--version'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return True
-    except Exception as e:
+    except Exception:
         return False
 
-# Function to install PyGame using pip
+
 def install_pygame():
+    """Install PyGame using pip."""
     try:
-        # Run the pip install command for pygame
         subprocess.run([sys.executable, "-m", "pip", "install", "pygame"], check=True)
         messagebox.showinfo("PyGame Installation", "PyGame has been successfully installed!")
-    except subprocess.CalledProcessError as e:
+    except subprocess.CalledProcessError:
         messagebox.showerror("Installation Failed", "Failed to install PyGame. Please try manually.")
         webbrowser.open("https://www.pygame.org/wiki/GettingStarted")
 
-# Function to toggle the visibility of the detailed view and update button text
+
 def toggle_detailed_view(detailed_widget, details_button):
+    """Toggle the visibility of the detailed view and update button text."""
     if detailed_widget.winfo_viewable():
         detailed_widget.pack_forget()  # Hide the detailed view
         details_button.config(text="Show Advanced Information")  # Update button text to "Show"
@@ -139,11 +141,11 @@ def toggle_detailed_view(detailed_widget, details_button):
         detailed_widget.pack(pady=10)  # Show the detailed view
         details_button.config(text="Hide Advanced Information")  # Update button text to "Hide"
 
-# Creating the GUI window
+
 def create_gui():
+    """Create the GUI window."""
     root = tk.Tk()
 
-    # Update the main window title
     root.title("Software Academy - System Checker & Python Installer")
 
     # Load and set the favicon (small logo) image
@@ -154,10 +156,8 @@ def create_gui():
     # Set window icon (favicon)
     root.iconphoto(False, favicon)
 
-    # Use the academy color for styling
-    academy_color = "#00aeff"
+    academy_color = "#00aeff"  # Academy color for styling
 
-    # Create a frame for better alignment and cleaner layout
     frame = tk.Frame(root, bg="white")
     frame.pack(padx=20, pady=20)
 
@@ -169,38 +169,42 @@ def create_gui():
     logo_label.image = logo  # Keep a reference to avoid garbage collection
     logo_label.pack(pady=10)
 
-    # Title text (update to reflect both Unreal Engine check and Python/PyGame install)
-    title = tk.Label(frame, text="System Checker & Python/PyGame Installer", font=("Helvetica", 16, "bold"), fg=academy_color, bg="white")
+    # Title text (reflect dual functionality)
+    title = tk.Label(frame, text="System Checker & Python/PyGame Installer",
+                     font=("Helvetica", 16, "bold"), fg=academy_color, bg="white")
     title.pack(pady=10)
 
-    # Instructions text (reflect dual functionality)
-    instructions = tk.Label(frame, text="Choose an option below to check system requirements or install Python & PyGame.", font=("Helvetica", 12), bg="white")
+    instructions = tk.Label(frame, text="Choose an option below to check system requirements or install Python & PyGame.",
+                            font=("Helvetica", 12), bg="white")
     instructions.pack(pady=10)
 
-    # Create a frame for the buttons to place them side by side
     button_frame = tk.Frame(frame, bg="white")
     button_frame.pack(pady=10)
 
     # Button to check Unreal Engine system requirements
-    check_button = tk.Button(button_frame, text="Test hardware for Unreal Engine", command=lambda: test_unreal_engine(details_button, detailed_widget), font=("Helvetica", 12), bg=academy_color, fg="white")
+    check_button = tk.Button(button_frame, text="Test hardware for Unreal Engine",
+                             command=lambda: test_unreal_engine(details_button, detailed_widget),
+                             font=("Helvetica", 12), bg=academy_color, fg="white")
     check_button.pack(side=tk.LEFT, padx=10)
 
     # Button to install Python and PyGame
-    python_button = tk.Button(button_frame, text="Install Python & PyGame", command=install_python_pygame, font=("Helvetica", 12), bg=academy_color, fg="white")
+    python_button = tk.Button(button_frame, text="Install Python & PyGame",
+                              command=install_python_pygame, font=("Helvetica", 12),
+                              bg=academy_color, fg="white")
     python_button.pack(side=tk.LEFT, padx=10)
 
-    # Detailed output box for system specs and validation results (initially hidden)
+    # Detailed output box (initially hidden)
     detailed_widget = scrolledtext.ScrolledText(frame, wrap=tk.WORD, width=60, height=15, state=tk.DISABLED)
     
-    # Button to show or hide detailed information (initially hidden)
-    details_button = tk.Button(frame, text="Show Advanced Information", command=lambda: toggle_detailed_view(detailed_widget, details_button), font=("Helvetica", 12), bg=academy_color, fg="white")
+    details_button = tk.Button(frame, text="Show Advanced Information",
+                               command=lambda: toggle_detailed_view(detailed_widget, details_button),
+                               font=("Helvetica", 12), bg=academy_color, fg="white")
     details_button.pack_forget()  # Initially hidden
 
-    # Set a white background for the entire window
     root.configure(bg="white")
 
     root.mainloop()
 
+
 if __name__ == "__main__":
-    # Run the GUI
     create_gui()

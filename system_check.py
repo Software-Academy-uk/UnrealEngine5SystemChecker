@@ -3,16 +3,15 @@ import platform
 import shutil
 import GPUtil
 
-# Function to check if a dedicated GPU is present
 def check_gpu():
+    """Check if a dedicated GPU is present."""
     gpus = GPUtil.getGPUs()
     if not gpus:
         return "No dedicated GPU found"
-    else:
-        return f"Dedicated GPU found: {gpus[0].name}"
+    return f"Dedicated GPU found: {gpus[0].name}"
 
-# Adding GPU check to system specs
 def check_system_specs():
+    """Retrieve system specifications: CPU, RAM, Disk Space, OS, and GPU."""
     specs = {}
 
     # CPU
@@ -38,4 +37,3 @@ def check_system_specs():
     specs['GPU'] = gpu_info
 
     return specs
-

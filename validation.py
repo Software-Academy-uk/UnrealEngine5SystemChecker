@@ -1,16 +1,14 @@
-# Validation function for system specs
 def validate_specs(specs, requirements):
+    """Validate system specs against given requirements."""
     errors = []
 
     # CPU validation
     try:
         if '(' in specs['CPU']:
             # Handle cases like "Intel(R) Core(TM) i7-8565U CPU @ 1.80GHz (4 cores)"
-            cpu_cores = int(specs['CPU'].split('(')[-1].split(' ')[0])  # Extract the number of cores in parentheses
+            cpu_cores = int(specs['CPU'].split('(')[-1].split(' ')[0])
         else:
-            # Handle simpler case like "1 core"
-            cpu_cores = int(specs['CPU'].split(' ')[0])
-        
+            cpu_cores = int(specs['CPU'].split(' ')[0])  # Handle simpler case
         if cpu_cores < requirements['CPU']:
             errors.append(f"CPU does not meet the requirement ({requirements['CPU']} cores).")
     except (ValueError, IndexError):
