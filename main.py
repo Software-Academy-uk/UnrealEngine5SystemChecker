@@ -38,7 +38,17 @@ RECOMMENDED_REQUIREMENTS_UE4 = {
 # Function to display Unreal Engine test results and show detailed information
 def test_unreal_engine(detailed_button, detailed_widget):
     specs = check_system_specs()
+    ue4_fallback = False  # To track if UE4 is selected as fallback
+    detailed_info = "--- Current System Specs ---\n"
+    
+    # Add current system specs to the detailed info
+    for key, value in specs.items():
+        detailed_info += f"{key}: {value}\n"
 
+    detailed_info += "\n--- Unreal Engine 5 Requirements ---\n"
+    detailed_info += f"Minimum Requirements: {MINIMUM_REQUIREMENTS_UE5}\n"
+    detailed_info += f"Recommended Requirements: {RECOMMENDED_REQUIREMENTS_UE5}\n"
+    
     # First, check against Unreal Engine 5 recommended requirements
     validation_errors = validate_specs(specs, RECOMMENDED_REQUIREMENTS_UE5)
 
@@ -54,29 +64,23 @@ def test_unreal_engine(detailed_button, detailed_widget):
             validation_errors_ue4 = validate_specs(specs, MINIMUM_REQUIREMENTS_UE4)
             if not validation_errors_ue4:
                 output = "Your system can run Unreal Engine 4, but not Unreal Engine 5."
+                ue4_fallback = True  # Mark that UE4 fallback was selected
             else:
                 output = "No, your system cannot run Unreal Engine 4 or 5."
+                validation_errors = validation_errors_ue4  # Use UE4 errors if UE5 failed
 
     # Show result in messagebox
     messagebox.showinfo("System Check Result", output)
 
-    # Generate detailed information about system specs and validation
-    detailed_info = "--- Current System Specs ---\n"
-    for key, value in specs.items():
-        detailed_info += f"{key}: {value}\n"
-
-    detailed_info += "\n--- Unreal Engine 5 Requirements ---\n"
-    detailed_info += f"Minimum Requirements: {MINIMUM_REQUIREMENTS_UE5}\n"
-    detailed_info += f"Recommended Requirements: {RECOMMENDED_REQUIREMENTS_UE5}\n"
-    detailed_info += "\n--- Unreal Engine 4 Requirements ---\n"
-    detailed_info += f"Minimum Requirements: {MINIMUM_REQUIREMENTS_UE4}\n"
-    detailed_info += f"Recommended Requirements: {RECOMMENDED_REQUIREMENTS_UE4}\n"
-
-    # Add any validation errors to the detailed info
+    # Append validation errors to the detailed info
     if validation_errors:
         detailed_info += "\n--- Validation Errors ---\n"
         for error in validation_errors:
             detailed_info += f"{error}\n"
+
+    # Show UE4 fallback in the detailed info if selected
+    if ue4_fallback:
+        detailed_info += "\n--- Unreal Engine 4 Fallback ---\nYour system cannot run Unreal Engine 5, but it can run Unreal Engine 4.\n"
 
     # Update the detailed widget with system specs and errors
     detailed_widget.config(state=tk.NORMAL)  # Enable editing to update content
@@ -86,6 +90,7 @@ def test_unreal_engine(detailed_button, detailed_widget):
 
     # Show the "Show Advanced Information" button after the test is run
     detailed_button.pack(pady=10)
+
 
 # Function to install Python and PyGame
 def install_python_pygame():
