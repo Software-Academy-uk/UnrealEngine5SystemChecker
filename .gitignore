@@ -47,3 +47,6 @@ pip-delete-this-directory.txt
 
 # Windows specific files
 Thumbs.db
+
+# Ignore pytest cache
+.pytest_cache/

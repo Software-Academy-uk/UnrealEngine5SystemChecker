@@ -1,27 +1,63 @@
 import tkinter as tk
 from tkinter import messagebox
+import webbrowser
 from PIL import Image, ImageTk
+
 from system_check import check_system_specs
 from validation import validate_specs
 
-# Function to display results in the GUI
-def display_results(specs):
-    validation_errors = validate_specs(specs)
+# Unreal Engine Requirements (Minimum and Recommended)
+MINIMUM_REQUIREMENTS = {
+    'CPU': 4,   # 4 cores
+    'RAM': 8,   # 8 GB
+    'Disk Space': 50,  # 50 GB free
+    'GPU': True  # Dedicated GPU
+}
+
+RECOMMENDED_REQUIREMENTS = {
+    'CPU': 6,   # 6 cores or more
+    'RAM': 16,  # 16 GB
+    'Disk Space': 100,  # 100 GB free
+    'GPU': True  # Dedicated GPU
+}
+
+# Function to display Unreal Engine test results in a messagebox
+def test_unreal_engine():
+    specs = check_system_specs()
+
+    # First, check against Unreal Engine 5 recommended requirements
+    validation_errors = validate_specs(specs, RECOMMENDED_REQUIREMENTS)
 
     if not validation_errors:
-        messagebox.showinfo("System Check", "Yes, your system can run Unreal Engine 5!")
+        output = "Yes, your system can run Unreal Engine 5!"
     else:
-        messagebox.showerror("System Check", "No, your system cannot run Unreal Engine 5.\n\n" + "\n".join(validation_errors))
+        # If recommended fails, check against minimum
+        validation_errors = validate_specs(specs, MINIMUM_REQUIREMENTS)
+        if not validation_errors:
+            output = "Your system meets the minimum requirements for Unreal Engine 5, but may not perform optimally."
+        else:
+            # If minimum requirements fail, suggest Unreal Engine 4
+            if specs['RAM'] >= 8:
+                output = "Your system doesn't meet Unreal Engine 5 requirements, but you can run Unreal Engine 4."
+            else:
+                output = "No, your system cannot run Unreal Engine 4 or 5."
 
-# Function to initiate the system check and GUI
-def run_gui_system_check():
-    specs = check_system_specs()  # Get system specs
-    display_results(specs)        # Show results in GUI
+    # Display results in a messagebox
+    messagebox.showinfo("System Check Result", output)
+
+# Function to install Python and PyGame
+def install_python_pygame():
+    messagebox.showinfo("Python & PyGame Installation", "Opening links to download Python and PyGame...")
+    # Open download links in the web browser
+    webbrowser.open("https://www.python.org/downloads/")
+    webbrowser.open("https://www.pygame.org/wiki/GettingStarted")
 
 # Creating the GUI window
 def create_gui():
     root = tk.Tk()
-    root.title("Software Academy - Unreal Engine 5 System Checker")
+
+    # Update the main window title
+    root.title("Software Academy - System Checker & Python Installer")
 
     # Load and set the favicon (small logo) image
     favicon = Image.open("images/software-academy-favicon_32x32.png")
@@ -46,17 +82,25 @@ def create_gui():
     logo_label.image = logo  # Keep a reference to avoid garbage collection
     logo_label.pack(pady=10)
 
-    # Title text
-    title = tk.Label(frame, text="Unreal Engine 5 System Checker", font=("Helvetica", 16, "bold"), fg=academy_color, bg="white")
+    # Title text (update to reflect both Unreal Engine check and Python/PyGame install)
+    title = tk.Label(frame, text="System Checker & Python/PyGame Installer", font=("Helvetica", 16, "bold"), fg=academy_color, bg="white")
     title.pack(pady=10)
 
-    # Instructions text
-    instructions = tk.Label(frame, text="Click the button below to check if your system meets Unreal Engine 5 requirements.", font=("Helvetica", 12), bg="white")
+    # Instructions text (reflect dual functionality)
+    instructions = tk.Label(frame, text="Choose an option below to check system requirements or install Python & PyGame.", font=("Helvetica", 12), bg="white")
     instructions.pack(pady=10)
 
-    # Check system button
-    check_button = tk.Button(frame, text="Check System", command=run_gui_system_check, font=("Helvetica", 12), bg=academy_color, fg="white")
-    check_button.pack(pady=20)
+    # Create a frame for the buttons to place them side by side
+    button_frame = tk.Frame(frame, bg="white")
+    button_frame.pack(pady=10)
+
+    # Button to check Unreal Engine system requirements
+    check_button = tk.Button(button_frame, text="Test hardware for Unreal Engine", command=test_unreal_engine, font=("Helvetica", 12), bg=academy_color, fg="white")
+    check_button.pack(side=tk.LEFT, padx=10)
+
+    # Button to install Python and PyGame
+    python_button = tk.Button(button_frame, text="Install Python & PyGame", command=install_python_pygame, font=("Helvetica", 12), bg=academy_color, fg="white")
+    python_button.pack(side=tk.LEFT, padx=10)
 
     # Set a white background for the entire window
     root.configure(bg="white")

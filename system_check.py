@@ -38,3 +38,4 @@ def check_system_specs():
     specs['GPU'] = gpu_info
 
     return specs
+
