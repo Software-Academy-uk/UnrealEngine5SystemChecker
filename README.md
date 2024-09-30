@@ -6,22 +6,45 @@ This tool checks whether your system meets the hardware requirements for Unreal 
 - **Unreal Engine 5 System Requirements Checker**: Detects if your system meets both the minimum and recommended requirements for Unreal Engine 5.
 - **Python & PyGame Installer**: Provides easy links to install Python and PyGame if needed.
 
-## Installation
+## Setup and Installation
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/William-Nitrosis/UnrealEngine5SystemChecker.git
-    ```
+### 1. Clone the repository:
+   ```bash
+   git clone https://github.com/William-Nitrosis/UnrealEngine5SystemChecker.git
+   cd UnrealEngine5SystemChecker
+   ```
 
-2. Install the required Python dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
+### 2. Set up a Python Virtual Environment (Recommended):
+To avoid dependency clashes, it's recommended to run the tool within a Python virtual environment.
 
-3. Run the tool:
-    ```bash
-    python main.py
-    ```
+   - **For Windows**:
+     ```bash
+     python -m venv venv
+     venv\Scripts\activate
+     ```
+
+   - **For macOS/Linux**:
+     ```bash
+     python3 -m venv venv
+     source venv/bin/activate
+     ```
+
+### 3. Install the Required Dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+### 4. Running the Tool:
+Once all dependencies are installed, you can run the tool:
+   ```bash
+   python main.py
+   ```
+
+### 5. Exiting the Virtual Environment:
+When you're done using the tool, deactivate the virtual environment by running:
+   ```bash
+   deactivate
+   ```
 
 ## Running Tests
 
