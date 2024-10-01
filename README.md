@@ -10,7 +10,7 @@ This tool checks whether your system meets the hardware requirements for Unreal 
 
 ### 1. Clone the repository:
    ```bash
-   git clone https://github.com/William-Nitrosis/UnrealEngine5SystemChecker.git
+   git clone https://github.com/Software-Academy-uk/UnrealEngine5SystemChecker.git
    cd UnrealEngine5SystemChecker
    ```
 
