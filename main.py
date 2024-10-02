@@ -5,7 +5,7 @@ from PIL import Image, ImageTk
 import subprocess
 import sys
 
-from system_check import check_system_specs
+from system_check import check_system_specs, driver_guidance
 from validation import validate_specs
 
 # Unreal Engine Requirements (Minimum, Recommended, and Unreal Engine 4)
@@ -38,8 +38,8 @@ RECOMMENDED_REQUIREMENTS_UE4 = {
 }
 
 
-def test_unreal_engine(detailed_button, detailed_widget):
-    """Display Unreal Engine test results and show detailed information."""
+def test_unreal_engine(detailed_button, detailed_widget, is_testing=False):
+    """Display Unreal Engine test results and show detailed information, including driver guidance."""
     specs = check_system_specs()
     ue4_fallback = False  # To track if UE4 is selected as fallback
     detailed_info = "--- Current System Specs ---\n"
@@ -72,9 +72,13 @@ def test_unreal_engine(detailed_button, detailed_widget):
             else:
                 output = "No, your system cannot run Unreal Engine 4 or 5."
                 validation_errors = validation_errors_ue4  # Use UE4 errors if UE5 failed
-
-    # Show result in messagebox
-    messagebox.showinfo("System Check Result", output)
+                
+    # If running tests, return the output instead of showing a messagebox
+    if is_testing:
+        return output
+    else:
+        # Show result in messagebox
+        messagebox.showinfo("System Check Result", output)
 
     # Append validation errors to the detailed info
     if validation_errors:
@@ -87,6 +91,11 @@ def test_unreal_engine(detailed_button, detailed_widget):
         detailed_info += ("\n--- Unreal Engine 4 Fallback ---\n"
                           "Your system cannot run Unreal Engine 5, but it can run Unreal Engine 4.\n")
 
+    # Check for driver guidance
+    driver_message = driver_guidance()
+    if "Error" in driver_message or "Please" in driver_message:
+        messagebox.showwarning("Driver Guidance", driver_message)
+
     # Update the detailed widget with system specs and errors
     detailed_widget.config(state=tk.NORMAL)  # Enable editing to update content
     detailed_widget.delete(1.0, tk.END)  # Clear previous content
@@ -95,6 +104,7 @@ def test_unreal_engine(detailed_button, detailed_widget):
 
     # Show the "Show Advanced Information" button after the test is run
     detailed_button.pack(pady=10)
+    
 
 
 def install_python_pygame():
