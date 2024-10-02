@@ -2,6 +2,19 @@ import psutil
 import platform
 import shutil
 import GPUtil
+import webbrowser
+
+# Define the minimum required driver versions for Unreal Engine
+MINIMUM_DRIVER_VERSION_NVIDIA = '456.38'
+MINIMUM_DRIVER_VERSION_AMD = '20.10.1'
+MINIMUM_DRIVER_VERSION_INTEL = '27.20.100.8587'
+
+# Define driver download links
+DRIVER_DOWNLOAD_LINKS = {
+    'NVIDIA': 'https://www.nvidia.com/Download/index.aspx',
+    'AMD': 'https://www.amd.com/en/support',
+    'Intel': 'https://www.intel.com/content/www/us/en/download-center/home.html'
+}
 
 def check_gpu():
     """Check if a dedicated GPU is present and provide driver status."""
@@ -18,34 +31,37 @@ def check_gpu():
         return "Error retrieving GPU information. Ensure the drivers are installed."
 
 
-def driver_guidance():
-    """Provide links to driver download pages for NVIDIA, AMD, and Intel GPUs."""
-    gpu_manufacturer = ""
-    
-    # Check GPU manufacturer
-    try:
-        gpus = GPUtil.getGPUs()
-        if not gpus:
-            return "No GPU detected. Please visit the relevant page to download drivers."
-        
-        gpu_name = gpus[0].name.lower()
-        
-        if "nvidia" in gpu_name:
-            gpu_manufacturer = "NVIDIA"
-            driver_link = "https://www.nvidia.com/Download/index.aspx"
-        elif "amd" in gpu_name or "radeon" in gpu_name:
-            gpu_manufacturer = "AMD"
-            driver_link = "https://www.amd.com/en/support"
-        elif "intel" in gpu_name:
-            gpu_manufacturer = "Intel"
-            driver_link = "https://www.intel.com/content/www/us/en/download-center/home.html"
-        else:
-            return "GPU detected, but manufacturer unknown. Please check your system for drivers."
+def get_gpu_info():
+    gpus = GPUtil.getGPUs()
+    if gpus:
+        return {
+            'name': gpus[0].name,
+            'driver_version': gpus[0].driver
+        }
+    return None
 
-        return f"Detected {gpu_manufacturer} GPU. Please update your drivers here: {driver_link}"
-    
-    except Exception:
-        return "Error detecting GPU drivers. Please visit the appropriate manufacturer website for help."
+def is_driver_up_to_date(gpu_name, driver_version):
+    if 'NVIDIA' in gpu_name:
+        return driver_version >= MINIMUM_DRIVER_VERSION_NVIDIA, DRIVER_DOWNLOAD_LINKS['NVIDIA']
+    elif 'AMD' in gpu_name:
+        return driver_version >= MINIMUM_DRIVER_VERSION_AMD, DRIVER_DOWNLOAD_LINKS['AMD']
+    elif 'Intel' in gpu_name:
+        return driver_version >= MINIMUM_DRIVER_VERSION_INTEL, DRIVER_DOWNLOAD_LINKS['Intel']
+    return False, None
+
+def check_driver_and_link_user():
+    driver_details = "\n--- Driver information ---\n"
+    gpu_info = get_gpu_info()
+    if gpu_info:
+        is_up_to_date, download_link = is_driver_up_to_date(gpu_info['name'], gpu_info['driver_version'])
+        driver_details += f"Current driver verison: {gpu_info['driver_version']}\n"
+        if is_up_to_date:
+            return f"Your {gpu_info['name']} driver is up to date for Unreal Engine.", driver_details
+        else:
+            webbrowser.open(download_link)
+            return f"Your {gpu_info['name']} driver is outdated. Please update it.", driver_details
+    else:
+        print("No GPU detected.")
 
 
 def check_system_specs():

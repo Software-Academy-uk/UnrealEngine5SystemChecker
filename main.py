@@ -5,8 +5,20 @@ from PIL import Image, ImageTk
 import subprocess
 import sys
 
-from system_check import check_system_specs, driver_guidance
+from system_check import check_system_specs, check_driver_and_link_user
 from validation import validate_specs
+
+# Define the minimum required driver versions for Unreal Engine
+MINIMUM_DRIVER_VERSION_NVIDIA = '456.38'
+MINIMUM_DRIVER_VERSION_AMD = '20.10.1'
+MINIMUM_DRIVER_VERSION_INTEL = '27.20.100.8587'
+
+# Define driver download links
+DRIVER_DOWNLOAD_LINKS = {
+    'NVIDIA': 'https://www.nvidia.com/Download/index.aspx',
+    'AMD': 'https://www.amd.com/en/support',
+    'Intel': 'https://www.intel.com/content/www/us/en/download-center/home.html'
+}
 
 # Unreal Engine Requirements (Minimum, Recommended, and Unreal Engine 4)
 MINIMUM_REQUIREMENTS_UE5 = {
@@ -92,9 +104,10 @@ def test_unreal_engine(detailed_button, detailed_widget, is_testing=False):
                           "Your system cannot run Unreal Engine 5, but it can run Unreal Engine 4.\n")
 
     # Check for driver guidance
-    driver_message = driver_guidance()
-    if "Error" in driver_message or "Please" in driver_message:
-        messagebox.showwarning("Driver Guidance", driver_message)
+    driver_message = check_driver_and_link_user()
+    if driver_message:
+        messagebox.showwarning("Driver Guidance", driver_message[0])
+        detailed_info += driver_message[1]
 
     # Update the detailed widget with system specs and errors
     detailed_widget.config(state=tk.NORMAL)  # Enable editing to update content
