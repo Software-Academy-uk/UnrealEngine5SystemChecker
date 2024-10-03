@@ -118,7 +118,10 @@ def test_unreal_engine(detailed_button, detailed_widget, is_testing=False):
     # Check for driver guidance
     driver_message = check_driver_and_link_user()
     if driver_message:
-        messagebox.showwarning("Driver Guidance", driver_message[0])
+        if "outdated" in driver_message:
+            messagebox.showerror("Driver Guidance", driver_message[0])
+        else:
+            messagebox.showinfo("Driver Guidance", driver_message[0])
         detailed_info += driver_message[1]
 
     # Update the detailed widget with system specs and errors
