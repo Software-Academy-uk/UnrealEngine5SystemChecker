@@ -3,10 +3,22 @@ from tkinter import messagebox, scrolledtext
 import webbrowser
 from PIL import Image, ImageTk
 import subprocess
+import os
 import sys
 
 from system_check import check_system_specs, check_driver_and_link_user
 from validation import validate_specs
+
+# Helper function to get the correct path when bundled with PyInstaller
+def resource_path(relative_path):
+    """ Get the absolute path to the resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 # Define the minimum required driver versions for Unreal Engine
 MINIMUM_DRIVER_VERSION_NVIDIA = '456.38'
@@ -139,16 +151,31 @@ def install_python_pygame():
 def check_python_installed():
     """Check if Python is installed."""
     try:
-        subprocess.run([sys.executable, '--version'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # Check if Python or Python3 is installed on the system
+        subprocess.run(['python', '--version'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return True
     except Exception:
-        return False
+        try:
+            # Some systems may have Python installed as "python3"
+            subprocess.run(['python3', '--version'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            return True
+        except Exception:
+            return False
 
 
 def install_pygame():
     """Install PyGame using pip."""
     try:
-        subprocess.run([sys.executable, "-m", "pip", "install", "pygame"], check=True)
+        # Determine if the program is running from a PyInstaller bundle
+        if getattr(sys, 'frozen', False):
+            # If running from the exe, use "python" directly instead of sys.executable
+            python_executable = "python"
+        else:
+            # If running as a Python script, use sys.executable
+            python_executable = sys.executable
+
+        # Install PyGame
+        subprocess.run([python_executable, "-m", "pip", "install", "pygame"], check=True)
         messagebox.showinfo("PyGame Installation", "PyGame has been successfully installed!")
     except subprocess.CalledProcessError:
         messagebox.showerror("Installation Failed", "Failed to install PyGame. Please try manually.")
@@ -171,10 +198,12 @@ def create_gui():
 
     root.title("Software Academy - System Checker & Python Installer")
 
-    # Load and set the favicon (small logo) image
-    favicon = Image.open("images/software-academy-favicon_32x32.png")
+    # Load and set the favicon image using the helper function
+    favicon_path = resource_path("images/software-academy-favicon_32x32.png")
+    favicon = Image.open(favicon_path)
     favicon = favicon.resize((32, 32))
     favicon = ImageTk.PhotoImage(favicon)
+    root.iconphoto(False, favicon)
 
     # Set window icon (favicon)
     root.iconphoto(False, favicon)
@@ -184,10 +213,11 @@ def create_gui():
     frame = tk.Frame(root, bg="white")
     frame.pack(padx=20, pady=20)
 
-    # Display the full logo in the window
-    logo = Image.open("images/software-academy-logo-image.png")
+    # Load the logo image using the helper function
+    logo_path = resource_path("images/software-academy-logo-image.png")
+    logo = Image.open(logo_path)
     logo = ImageTk.PhotoImage(logo)
-    
+
     logo_label = tk.Label(frame, image=logo, bg="white")
     logo_label.image = logo  # Keep a reference to avoid garbage collection
     logo_label.pack(pady=10)
