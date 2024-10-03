@@ -1,95 +1,97 @@
-# Unreal Engine System Checker
+## Unreal Engine System Checker and Python/PyGame Installer
 
-This tool checks whether your system meets the hardware requirements for Unreal Engine 5 and can also guide you through installing Python and PyGame.
+This tool helps users determine if their system can run **Unreal Engine 4** or **Unreal Engine 5**, checks GPU drivers to ensure they are up to date, and provides an option to install **Python** and **PyGame**. It is designed to be user-friendly, especially for parents who may be unfamiliar with technical requirements.
 
-## Features
-- **Unreal Engine 5 System Requirements Checker**: Detects if your system meets both the minimum and recommended requirements for Unreal Engine 5.
-- **Python & PyGame Installer**: Provides easy links to install Python and PyGame if needed.
+### Features:
+1. **System Check for Unreal Engine**:
+   - Determines if the system meets the **minimum** and **recommended** requirements for **Unreal Engine 5**.
+   - If the system cannot run **Unreal Engine 5**, it checks if the system can run **Unreal Engine 4**.
+   - Displays detailed information on why the system may fail and suggests fallback options if applicable.
 
-## Setup and Installation
+2. **Driver Check**:
+   - Detects the user's **GPU** and verifies if the GPU drivers are up to date.
+   - Provides links to download the latest drivers from NVIDIA, AMD, or Intel based on the detected GPU.
+   - Warns the user if their drivers are outdated or missing.
 
-### 1. Clone the repository:
+3. **Python & PyGame Installation**:
+   - Automatically installs **PyGame** if Python is detected on the system.
+   - If Python is not installed, the user is directed to the official Python download page.
+   - Additionally, a helpful video link is provided to guide users through the installation process.
+
+### System Requirements for Unreal Engine:
+- **Minimum Requirements for Unreal Engine 5**:
+  - **CPU**: 2 cores
+  - **RAM**: 4 GB
+  - **Disk Space**: 100 GB free
+  - **GPU**: No dedicated GPU required
+
+- **Recommended Requirements for Unreal Engine 5**:
+  - **CPU**: 4 cores
+  - **RAM**: 8 GB
+  - **Disk Space**: 100 GB free
+  - **GPU**: Dedicated GPU required
+
+- **Minimum Requirements for Unreal Engine 4**:
+  - **CPU**: 2 cores
+  - **RAM**: 4 GB
+  - **Disk Space**: 50 GB free
+  - **GPU**: No dedicated GPU required
+
+- **Recommended Requirements for Unreal Engine 4**:
+  - **CPU**: 4 cores
+  - **RAM**: 8 GB
+  - **Disk Space**: 50 GB free
+  - **GPU**: Dedicated GPU required
+
+### Usage Instructions:
+
+1. **Running the System Checker**:
+   - When the application is launched, you will see two buttons:
+     - **Test hardware for Unreal Engine**: This will test your system’s compatibility with Unreal Engine 5 and 4.
+     - **Install Python & PyGame**: This installs Python and PyGame if Python is already installed on your system.
+
+2. **Advanced Information**:
+   - After running the system test, you can click the **Show Advanced Information** button to display detailed system specs, including why the system may have failed the Unreal Engine check.
+
+3. **Driver Update Guidance**:
+   - The program will automatically check your GPU driver version. If the drivers are outdated or missing, a warning will be displayed, and a link to download the latest drivers from the appropriate vendor will be provided.
+
+### How to Install:
+1. Clone the repository:
    ```bash
-   git clone https://github.com/Software-Academy-uk/UnrealEngine5SystemChecker.git
+   git clone https://github.com/Software-Academy-uk/UnrealEngine5SystemChecker
+   ```
+2. Navigate to the project folder:
+   ```bash
    cd UnrealEngine5SystemChecker
    ```
-
-### 2. Set up a Python Virtual Environment (Recommended):
-To avoid dependency clashes, it's recommended to run the tool within a Python virtual environment.
-
-   - **For Windows**:
-     ```bash
-     python -m venv venv
-     venv\Scripts\activate
-     ```
-
-   - **For macOS/Linux**:
-     ```bash
-     python3 -m venv venv
-     source venv/bin/activate
-     ```
-
-### 3. Install the Required Dependencies:
+3. Install the required Python dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
-### 4. Running the Tool:
-Once all dependencies are installed, you can run the tool:
+4. Run the application:
    ```bash
    python main.py
    ```
 
-### 5. Exiting the Virtual Environment:
-When you're done using the tool, deactivate the virtual environment by running:
+### How to Test:
+Unit tests are provided to ensure the functionality of the system checker and Python/PyGame installer. Tests are split across multiple files for modularity, and they can be run using `pytest`.
+
+1. Install testing dependencies:
    ```bash
-   deactivate
+   pip install pytest
    ```
 
-## Running Tests
+2. Run the tests:
+   ```bash
+   pytest
+   ```
 
-There are multiple test cases designed to check different hardware configurations. However, due to mock state leakage between tests when run in bulk, it is recommended to run individual tests.
+3. Test categories:
+   - **Unreal Engine System Tests**: Located in the `unreal_engine_tests` folder, these tests check various system configurations against the Unreal Engine requirements.
+   - **Python & PyGame Installer Tests**: Located in `test_python_pygame.py`, these tests verify the Python detection and PyGame installation process.
+   - **Driver Check Tests**: Located in `test_driver_guidance.py`, these tests ensure GPU detection and driver guidance functionality.
 
-### Running Individual Tests
-
-You can run specific tests by using pytest with markers:
-
-- **Test for fully passing Unreal Engine 5 (Recommended)**:
-  ```bash
-  pytest -m pass_ue5
-  ```
-
-- **Test for passing Unreal Engine 5 (Minimum)**:
-  ```bash
-  pytest -m min_pass_ue5
-  ```
-
-- **Test for failing Unreal Engine 5 but passing Unreal Engine 4 (Recommended)**:
-  ```bash
-  pytest -m fail_ue5_pass_ue4
-  ```
-
-- **Test for failing Unreal Engine 5 but passing Unreal Engine 4 (Minimum)**:
-  ```bash
-  pytest -m fail_ue5_min_pass_ue4
-  ```
-
-- **Test for failing both Unreal Engine 5 and Unreal Engine 4**:
-  ```bash
-  pytest -m fail_ue5_fail_ue4
-  ```
-
-### Known Issue
-
-Running all tests together using `pytest` might cause mock state leakage between tests, resulting in failures. To avoid this issue, run tests individually as described above.
-
-## Requirements
-- Python 3.x
-- The following Python libraries:
-  - `psutil`
-  - `GPUtil`
-  - `tkinter` (for GUI)
-  - `Pillow` (for image handling)
-
-## Notes
-- Ensure your system has a dedicated GPU for Unreal Engine 5.
+### License:
+This tool is licensed to Software Academy and cannot be redistributed or modified without permission.
