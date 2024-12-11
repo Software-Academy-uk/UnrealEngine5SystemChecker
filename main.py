@@ -5,10 +5,12 @@ from PIL import Image, ImageTk
 import subprocess
 import os
 import sys
+import pyglet
 
 from system_check import check_system_specs, check_driver_and_link_user
 from validation import validate_specs
 
+pyglet.font.add_file('./fonts/Montserrat-VariableFont_wght.ttf')
 
 # Helper function to get the correct path when bundled with PyInstaller
 def resource_path(relative_path):
@@ -282,22 +284,30 @@ def create_gui():
     # Button to check Unreal Engine system requirements
     check_button = tk.Button(
         button_frame,
-        text="Test hardware for Unreal Engine",
+        text="Unreal Engine\nHardware Checker >",
         command=lambda: test_unreal_engine(details_button, detailed_widget),
-        font=("Helvetica", 12),
-        bg=academy_color,
-        fg="white",
+        font=("Montserrat Black", 14),
+        fg="#FFFFFF",
+        bg="#FF076B",
+        activebackground="#FF3366",
+        activeforeground="#FFFFFF",
+        width=20,
+        height=3,
     )
     check_button.pack(side=tk.LEFT, padx=10)
 
     # Button to install Python and PyGame
     python_button = tk.Button(
         button_frame,
-        text="Install Python & PyGame",
+        text="Python\nInstallation >",
         command=install_python_pygame,
-        font=("Helvetica", 12),
-        bg=academy_color,
-        fg="white",
+        font=("Montserrat Black", 14),
+        fg="#FFFFFF",
+        bg="#00AEFF",
+        activebackground="#3399FF",
+        activeforeground="#FFFFFF",
+        width=20,
+        height=3,
     )
     python_button.pack(side=tk.LEFT, padx=10)
 
