@@ -253,7 +253,7 @@ def create_gui():
     # Load the logo image using the helper function
     logo_path = resource_path("images/software-academy-logo-image.png")
     logo = Image.open(logo_path)
-    logo = logo.resize((200, 43))
+    logo = logo.resize((200, 43), Image.Resampling.BILINEAR)
     logo = ImageTk.PhotoImage(logo)
 
     logo_label = tk.Label(frame, image=logo, bg="white")

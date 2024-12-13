@@ -211,7 +211,9 @@ def create_gui():
     root.title("Software Academy - System Checker & Python Installer")
 
     favicon = ImageTk.PhotoImage(
-        Image.open(resource_path("images/favicon.ico")).resize((32, 32))
+        Image.open(resource_path("images/favicon.ico")).resize(
+            (32, 32), Image.Resampling.BILINEAR
+        )
     )
     root.iconphoto(False, favicon)
 
@@ -220,10 +222,12 @@ def create_gui():
     frame.pack(padx=20, pady=20)
 
     logo = ImageTk.PhotoImage(
-        Image.open(resource_path("images/logo.png")).resize((200, 43))
+        Image.open(resource_path("images/logo.png")).resize(
+            (200, 43), Image.Resampling.BILINEAR
+        )
     )
     tk.Label(frame, image=logo, bg="white").pack(anchor="nw")
-    
+
     # Load in the font for TK (??SUPER WEIRD??)
     mon_font = Font(file=resource_path("fonts/Montserrat-Black.ttf"))
 
