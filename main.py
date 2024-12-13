@@ -10,7 +10,8 @@ import pyglet
 from system_check import check_system_specs, check_driver_and_link_user
 from validation import validate_specs
 
-pyglet.font.add_file('./fonts/Montserrat-VariableFont_wght.ttf')
+pyglet.font.add_file("./fonts/Montserrat-VariableFont_wght.ttf")
+
 
 # Helper function to get the correct path when bundled with PyInstaller
 def resource_path(relative_path):
@@ -254,11 +255,12 @@ def create_gui():
     # Load the logo image using the helper function
     logo_path = resource_path("images/software-academy-logo-image.png")
     logo = Image.open(logo_path)
+    logo = logo.resize((200, 43))
     logo = ImageTk.PhotoImage(logo)
 
     logo_label = tk.Label(frame, image=logo, bg="white")
     logo_label.image = logo  # Keep a reference to avoid garbage collection
-    logo_label.pack(pady=10)
+    logo_label.pack(anchor="nw")
 
     # Title text (reflect dual functionality)
     title = tk.Label(
@@ -268,7 +270,7 @@ def create_gui():
         fg=academy_color,
         bg="white",
     )
-    title.pack(pady=10)
+    #title.pack(pady=10)
 
     instructions = tk.Label(
         frame,
@@ -276,10 +278,10 @@ def create_gui():
         font=("Helvetica", 12),
         bg="white",
     )
-    instructions.pack(pady=10)
+    #instructions.pack(pady=10)
 
     button_frame = tk.Frame(frame, bg="white")
-    button_frame.pack(pady=10)
+    button_frame.pack(pady=(140, 10))
 
     # Button to check Unreal Engine system requirements
     check_button = tk.Button(
@@ -291,10 +293,12 @@ def create_gui():
         bg="#FF076B",
         activebackground="#FF3366",
         activeforeground="#FFFFFF",
-        width=20,
+        width=23,
         height=3,
+        highlightthickness=0,
+        borderwidth=0,
     )
-    check_button.pack(side=tk.LEFT, padx=10)
+    check_button.pack(side=tk.LEFT, padx=30)
 
     # Button to install Python and PyGame
     python_button = tk.Button(
@@ -306,10 +310,12 @@ def create_gui():
         bg="#00AEFF",
         activebackground="#3399FF",
         activeforeground="#FFFFFF",
-        width=20,
+        width=23,
         height=3,
+        highlightthickness=0,
+        borderwidth=0,
     )
-    python_button.pack(side=tk.LEFT, padx=10)
+    python_button.pack(side=tk.RIGHT, padx=30)
 
     # Detailed output box (initially hidden)
     detailed_widget = scrolledtext.ScrolledText(
