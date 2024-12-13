@@ -229,6 +229,58 @@ def toggle_detailed_view(detailed_widget, details_button):
         )  # Update button text to "Hide"
 
 
+def create_multicolor_text_button(
+    canvas: tk.Canvas,
+    x,
+    y,
+    text_lines,
+    colors,
+    fonts,
+    command,
+    button_width,
+    button_height,
+    bg_color,
+    line_space,
+):
+    """
+    Create a multi-line text "button" on a canvas with each line styled differently.
+    """
+    padding = 10
+
+    # Create a unique tag for this button
+    button_tag = f"button_{x}_{y}"
+
+    # Draw the button background
+    rect_id = canvas.create_rectangle(
+        x,
+        y,
+        x + button_width,
+        y + button_height,
+        fill=bg_color,
+        outline=bg_color,
+        tags=button_tag,
+    )
+
+    # Draw each line of text
+    for i, (line, color, font) in enumerate(zip(text_lines, colors, fonts)):
+        canvas.create_text(
+            x + padding,
+            y + padding + i * line_space,
+            text=line,
+            fill=color,
+            font=font,
+            anchor="nw",
+            tags=button_tag,  # Associate text with the same button tag
+        )
+
+    # Bind the click event to all elements with the button's tag
+    def on_click(event):
+        if command:
+            command()
+
+    canvas.tag_bind(button_tag, "<Button-1>", on_click)
+
+
 def create_gui():
     """Create the GUI window."""
     root = tk.Tk()
@@ -263,48 +315,56 @@ def create_gui():
     # Load in the font for TK (??SUPER WEIRD??)
     mon_font = Font(file=resource_path("fonts/Montserrat-Black.ttf"))
 
-    button_frame = tk.Frame(frame, bg="white")
-    button_frame.pack(pady=(140, 10))
-
-    # Button to check Unreal Engine system requirements
-    check_button = tk.Button(
-        button_frame,
-        text="Unreal Engine\nHardware Checker >",
-        command=lambda: test_unreal_engine(details_button, detailed_widget),
-        font=("Montserrat Black", 16),
-        fg="#FFFFFF",
-        bg="#FF076B",
-        activebackground="#FF3366",
-        activeforeground="#FFFFFF",
-        width=16,
-        height=2,
+    # Canvas
+    canvas = tk.Canvas(
+        frame,
+        bg="white",
+        width=720,
+        height=280,
         highlightthickness=0,
         borderwidth=0,
-        justify="left",
-        anchor="w",
-        padx=10,
     )
-    check_button.pack(side=tk.LEFT, padx=(10, 45))
+    canvas.pack()
 
-    # Button to install Python and PyGame
-    python_button = tk.Button(
-        button_frame,
-        text="Python\n               Installation >",
-        command=install_python_pygame,
-        font=("Montserrat Black", 16),
-        fg="#FFFFFF",
-        bg="#00AEFF",
-        activebackground="#3399FF",
-        activeforeground="#FFFFFF",
-        width=16,
-        height=2,
-        highlightthickness=0,
-        borderwidth=0,
-        justify="left",
-        anchor="w",
-        padx=10,
+    # Define the text, colors, and fonts for the multicolor button
+    lines = ["Unreal Engine", "Hardware Checker >"]
+    colors = ["#FFFFFF", "#000040"]
+    fonts = [("Montserrat Black", 24), ("Montserrat Black", 18)]
+
+    # Add the multicolor button to the canvas
+    create_multicolor_text_button(
+        canvas,
+        20,
+        180,
+        lines,
+        colors,
+        fonts,
+        lambda: test_unreal_engine(details_button, detailed_widget),
+        290,
+        85,
+        "#FF076B",
+        35,
     )
-    python_button.pack(side=tk.RIGHT, padx=(45, 10))
+    
+    # Define the text, colors, and fonts for the multicolor button
+    lines = ["Python", "              Installation >"]
+    colors = ["#FFFFFF", "#000040"]
+    fonts = [("Montserrat Black", 24), ("Montserrat Black", 18)]
+
+    # Add the multicolor button to the canvas
+    create_multicolor_text_button(
+        canvas,
+        403,
+        180,
+        lines,
+        colors,
+        fonts,
+        lambda: test_unreal_engine(details_button, detailed_widget),
+        290,
+        85,
+        "#00AEFF",
+        35,
+    )
 
     # Detailed output box (initially hidden)
     detailed_widget = scrolledtext.ScrolledText(
