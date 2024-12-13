@@ -5,12 +5,10 @@ from PIL import Image, ImageTk
 import subprocess
 import os
 import sys
-import pyglet
+from tkextrafont import Font
 
 from system_check import check_system_specs, check_driver_and_link_user
 from validation import validate_specs
-
-pyglet.font.add_file("./fonts/Montserrat-VariableFont_wght.ttf")
 
 
 # Helper function to get the correct path when bundled with PyInstaller
@@ -262,11 +260,14 @@ def create_gui():
     logo_label.image = logo  # Keep a reference to avoid garbage collection
     logo_label.pack(anchor="nw")
 
+    # Load in the font for TK (??SUPER WEIRD??)
+    mon_font = Font(file=resource_path("fonts/Montserrat-Black.ttf"))
+
     # Title text (reflect dual functionality)
     title = tk.Label(
         frame,
         text="System Checker & Python/PyGame Installer",
-        font=("Helvetica", 16, "bold"),
+        font=("Montserrat Black", 16, "bold"),
         fg=academy_color,
         bg="white",
     )
@@ -275,7 +276,7 @@ def create_gui():
     instructions = tk.Label(
         frame,
         text="Choose an option below to check system requirements or install Python & PyGame.",
-        font=("Helvetica", 12),
+        font=("Montserrat Black", 12),
         bg="white",
     )
     # instructions.pack(pady=10)
@@ -288,34 +289,40 @@ def create_gui():
         button_frame,
         text="Unreal Engine\nHardware Checker >",
         command=lambda: test_unreal_engine(details_button, detailed_widget),
-        font=("Montserrat Black", 14),
+        font=("Montserrat Black", 16),
         fg="#FFFFFF",
         bg="#FF076B",
         activebackground="#FF3366",
         activeforeground="#FFFFFF",
-        width=23,
-        height=3,
+        width=16,
+        height=2,
         highlightthickness=0,
         borderwidth=0,
+        justify="left",
+        anchor="w",
+        padx=10,
     )
-    check_button.pack(side=tk.LEFT, padx=30)
+    check_button.pack(side=tk.LEFT, padx=(10, 45))
 
     # Button to install Python and PyGame
     python_button = tk.Button(
         button_frame,
-        text="Python\nInstallation >",
+        text="Python\n               Installation >",
         command=install_python_pygame,
-        font=("Montserrat Black", 14),
+        font=("Montserrat Black", 16),
         fg="#FFFFFF",
         bg="#00AEFF",
         activebackground="#3399FF",
         activeforeground="#FFFFFF",
-        width=23,
-        height=3,
+        width=16,
+        height=2,
         highlightthickness=0,
         borderwidth=0,
+        justify="left",
+        anchor="w",
+        padx=10,
     )
-    python_button.pack(side=tk.RIGHT, padx=30)
+    python_button.pack(side=tk.RIGHT, padx=(45, 10))
 
     # Detailed output box (initially hidden)
     detailed_widget = scrolledtext.ScrolledText(
@@ -326,7 +333,7 @@ def create_gui():
         frame,
         text="Show Advanced Information",
         command=lambda: toggle_detailed_view(detailed_widget, details_button),
-        font=("Helvetica", 12),
+        font=("Montserrat Black", 12),
         bg=academy_color,
         fg="white",
         highlightthickness=0,
