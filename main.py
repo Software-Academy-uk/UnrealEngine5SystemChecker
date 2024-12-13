@@ -270,7 +270,7 @@ def create_gui():
         fg=academy_color,
         bg="white",
     )
-    #title.pack(pady=10)
+    # title.pack(pady=10)
 
     instructions = tk.Label(
         frame,
@@ -278,7 +278,7 @@ def create_gui():
         font=("Helvetica", 12),
         bg="white",
     )
-    #instructions.pack(pady=10)
+    # instructions.pack(pady=10)
 
     button_frame = tk.Frame(frame, bg="white")
     button_frame.pack(pady=(140, 10))
@@ -329,6 +329,8 @@ def create_gui():
         font=("Helvetica", 12),
         bg=academy_color,
         fg="white",
+        highlightthickness=0,
+        borderwidth=0,
     )
     details_button.pack_forget()  # Initially hidden
 
