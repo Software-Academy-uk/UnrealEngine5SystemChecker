@@ -122,6 +122,13 @@ def install_python_and_pygame():
             "Python is not installed. Redirecting to installation page...",
         )
         webbrowser.open("https://www.python.org/downloads/")
+        messagebox.showinfo(
+            "How to video", "Here is a short video on how to install Python."
+        )
+        if os.name == 'nt':
+            webbrowser.open("https://www.youtube.com/watch?v=cTwD_LC5F9A")
+        else:
+            webbrowser.open("https://www.youtube.com/watch?v=YigK5HwxV3M")
 
 
 def is_python_installed():
@@ -223,7 +230,7 @@ def create_gui():
 
     logo = ImageTk.PhotoImage(
         Image.open(resource_path("images/logo.png")).resize(
-            (200, 43), Image.Resampling.BILINEAR
+            (200, 43), Image.Resampling.BILINEAR 
         )
     )
     tk.Label(frame, image=logo, bg="white").pack(anchor="nw")
@@ -252,7 +259,7 @@ def create_gui():
         canvas,
         403,
         180,
-        ["Python", "Installation >"],
+        ["Python", "              Installation >"],
         ["#FFFFFF", "#000040"],
         [("Montserrat Black", 24), ("Montserrat Black", 18)],
         install_python_and_pygame,
