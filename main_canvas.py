@@ -46,6 +46,58 @@ REQUIREMENTS_UE4 = {
     "recommended": {"CPU": 4, "RAM": 8, "Disk Space": 50, "GPU": True},
 }
 
+loading_overlay = None
+loading_text = None
+
+
+def show_loading_overlay(canvas: tk.Canvas, message="Loading..."):
+    global loading_overlay, loading_text
+    canvas.update_idletasks()  # Ensure canvas size is correct
+
+    width = canvas.winfo_width()
+    height = canvas.winfo_height()
+
+    # Create gray overlay rectangle
+    loading_overlay = canvas.create_rectangle(
+        0, 0, width, height, fill="gray", stipple="gray75", tags="loading"
+    )
+
+    # Add loading text
+    loading_text = canvas.create_text(
+        width // 2,
+        height // 2,
+        text=message,
+        fill="white",
+        font=("Montserrat Black", 20),
+        tags="loading",
+    )
+
+    canvas.update()
+
+
+def hide_loading_overlay(canvas: tk.Canvas):
+    canvas.delete("loading")
+
+
+def set_widgets_state(parent: tk.Canvas, state):
+    for widget in parent.winfo_children():
+        try:
+            widget.configure(state=state)
+        except Exception:
+            pass  # Not all widgets support 'state'
+
+
+def run_check_unreal_engine_compatibility(
+    root, canvas, detail_button, detail_widget, test_mode=False
+):
+    set_widgets_state(root, "disabled")
+    show_loading_overlay(canvas, "Checking system requirements...")
+
+    check_unreal_engine_compatibility(detail_button, detail_widget, test_mode)
+
+    hide_loading_overlay(canvas)
+    set_widgets_state(root, "normal")
+
 
 def check_unreal_engine_compatibility(detail_button, detail_widget, test_mode=False):
     """Check system compatibility with Unreal Engine and display results."""
@@ -111,6 +163,16 @@ def check_unreal_engine_compatibility(detail_button, detail_widget, test_mode=Fa
     detail_button.pack(pady=10)
 
 
+def run_setup_ai_ml_environment(root, canvas):
+    set_widgets_state(root, "disabled")
+    show_loading_overlay(canvas, "Setting up AI environment...")
+
+    setup_ai_ml_environment()
+
+    hide_loading_overlay(canvas)
+    set_widgets_state(root, "normal")
+
+
 def setup_ai_ml_environment():
     # Step 1: Check if we're in a risky directory
     current_path = os.path.abspath(".")
@@ -142,7 +204,8 @@ def setup_ai_ml_environment():
 
     if not os.path.isfile("ai_requirements.txt"):
         messagebox.showerror(
-            "Missing File", "Couldn't find ai_requirements.txt in the current directory."
+            "Missing File",
+            "Couldn't find ai_requirements.txt in the current directory.",
         )
         return
 
@@ -157,6 +220,16 @@ def setup_ai_ml_environment():
         messagebox.showerror(
             "Installation Error", "Failed to install packages from ai_requirements.txt."
         )
+
+
+def run_install_python_and_pygame(root, canvas):
+    set_widgets_state(root, "disabled")
+    show_loading_overlay(canvas, "Setting up Python...")
+
+    install_python_and_pygame()
+
+    hide_loading_overlay(canvas)
+    set_widgets_state(root, "normal")
 
 
 def install_python_and_pygame():
@@ -296,7 +369,7 @@ def create_gui():
         ["Unreal Engine", "Hardware Checker >"],
         ["#FFFFFF", "#000040"],
         [("Montserrat Black", 24), ("Montserrat Black", 18)],
-        lambda: check_unreal_engine_compatibility(details_button, detail_widget),
+        lambda: run_check_unreal_engine_compatibility(root, canvas, details_button, detail_widget),
         290,
         85,
         "#FF076B",
@@ -310,7 +383,7 @@ def create_gui():
         ["Python", "              Installation >"],
         ["#FFFFFF", "#000040"],
         [("Montserrat Black", 24), ("Montserrat Black", 18)],
-        install_python_and_pygame,
+        lambda: run_install_python_and_pygame(root, canvas),
         290,
         85,
         "#00AEFF",
@@ -324,7 +397,7 @@ def create_gui():
         ["AI & Machine Learning", "Setup Environment >"],
         ["#FFFFFF", "#000040"],
         [("Montserrat Black", 24), ("Montserrat Black", 18)],
-        setup_ai_ml_environment,
+        lambda: run_setup_ai_ml_environment(root, canvas),
         673,
         85,
         "#3CFF8F",
