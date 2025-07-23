@@ -191,8 +191,14 @@ def setup_ai_ml_environment():
     try:
         subprocess.run(["python", "-m", "venv", "venv"], check=True)
     except subprocess.CalledProcessError:
-        messagebox.showerror("Error", "Failed to create virtual environment.")
-        return
+        try:
+            subprocess.run(["python3", "-m", "venv", "venv"], check=True)
+        except subprocess.CalledProcessError:
+            messagebox.showerror(
+                "Error",
+                "Failed to create virtual environment.\nMake sure Python 3 is installed and available in PATH.",
+            )
+            return
 
     # Step 3: Activate and install requirements
     # NOTE: Activation is usually for terminal environments; here we just install using the correct pip
@@ -369,7 +375,9 @@ def create_gui():
         ["Unreal Engine", "Hardware Checker >"],
         ["#FFFFFF", "#000040"],
         [("Montserrat Black", 24), ("Montserrat Black", 18)],
-        lambda: run_check_unreal_engine_compatibility(root, canvas, details_button, detail_widget),
+        lambda: run_check_unreal_engine_compatibility(
+            root, canvas, details_button, detail_widget
+        ),
         290,
         85,
         "#FF076B",
