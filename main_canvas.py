@@ -111,6 +111,54 @@ def check_unreal_engine_compatibility(detail_button, detail_widget, test_mode=Fa
     detail_button.pack(pady=10)
 
 
+def setup_ai_ml_environment():
+    # Step 1: Check if we're in a risky directory
+    current_path = os.path.abspath(".")
+    risky_folders = ["desktop", "downloads", "temp"]
+    if any(folder in current_path.lower() for folder in risky_folders):
+        proceed = messagebox.askyesno(
+            "Warning",
+            "This folder doesn't look like a proper project location (e.g. it's on your Desktop or Downloads).\n\n"
+            "It's best to move this folder somewhere like your Documents folder.\n\n"
+            "Do you still want to continue?",
+        )
+        if not proceed:
+            return
+
+    # Step 2: Create virtual environment
+    try:
+        subprocess.run(["python", "-m", "venv", "venv"], check=True)
+    except subprocess.CalledProcessError:
+        messagebox.showerror("Error", "Failed to create virtual environment.")
+        return
+
+    # Step 3: Activate and install requirements
+    # NOTE: Activation is usually for terminal environments; here we just install using the correct pip
+    pip_executable = (
+        os.path.join("venv", "Scripts", "pip.exe")
+        if os.name == "nt"
+        else os.path.join("venv", "bin", "pip")
+    )
+
+    if not os.path.isfile("ai_requirements.txt"):
+        messagebox.showerror(
+            "Missing File", "Couldn't find ai_requirements.txt in the current directory."
+        )
+        return
+
+    try:
+        subprocess.run(
+            [pip_executable, "install", "-r", "ai_requirements.txt"], check=True
+        )
+        messagebox.showinfo(
+            "Success", "Environment setup complete and requirements installed."
+        )
+    except subprocess.CalledProcessError:
+        messagebox.showerror(
+            "Installation Error", "Failed to install packages from ai_requirements.txt."
+        )
+
+
 def install_python_and_pygame():
     """Check Python installation and install PyGame."""
     if is_python_installed():
@@ -125,7 +173,7 @@ def install_python_and_pygame():
         messagebox.showinfo(
             "How to video", "Here is a short video on how to install Python."
         )
-        if os.name == 'nt':
+        if os.name == "nt":
             webbrowser.open("https://www.youtube.com/watch?v=cTwD_LC5F9A")
         else:
             webbrowser.open("https://www.youtube.com/watch?v=YigK5HwxV3M")
@@ -230,7 +278,7 @@ def create_gui():
 
     logo = ImageTk.PhotoImage(
         Image.open(resource_path("images/logo.png")).resize(
-            (200, 43), Image.Resampling.BILINEAR 
+            (200, 43), Image.Resampling.BILINEAR
         )
     )
     tk.Label(frame, image=logo, bg="white").pack(anchor="nw")
@@ -244,7 +292,7 @@ def create_gui():
     create_multiline_button(
         canvas,
         20,
-        180,
+        80,
         ["Unreal Engine", "Hardware Checker >"],
         ["#FFFFFF", "#000040"],
         [("Montserrat Black", 24), ("Montserrat Black", 18)],
@@ -258,7 +306,7 @@ def create_gui():
     create_multiline_button(
         canvas,
         403,
-        180,
+        80,
         ["Python", "              Installation >"],
         ["#FFFFFF", "#000040"],
         [("Montserrat Black", 24), ("Montserrat Black", 18)],
@@ -266,6 +314,20 @@ def create_gui():
         290,
         85,
         "#00AEFF",
+        35,
+    )
+
+    create_multiline_button(
+        canvas,
+        20,
+        180,
+        ["AI & Machine Learning", "Setup Environment >"],
+        ["#FFFFFF", "#000040"],
+        [("Montserrat Black", 24), ("Montserrat Black", 18)],
+        setup_ai_ml_environment,
+        673,
+        85,
+        "#3CFF8F",
         35,
     )
 
