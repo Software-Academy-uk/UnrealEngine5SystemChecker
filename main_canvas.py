@@ -46,6 +46,10 @@ REQUIREMENTS_UE4 = {
     "recommended": {"CPU": 4, "RAM": 8, "Disk Space": 50, "GPU": True},
 }
 
+INSTALL_PYTHON_VIDEO_WIN = "https://www.youtube.com/watch?v=cTwD_LC5F9A"
+INSTALL_PYTHON_VIDEO_MAC = "https://www.youtube.com/watch?v=YigK5HwxV3M"
+PYTHON_DOWNLOAD_LINK = "https://www.python.org/downloads/"
+
 loading_overlay = None
 loading_text = None
 
@@ -164,11 +168,29 @@ def check_unreal_engine_compatibility(detail_button, detail_widget, test_mode=Fa
 
 
 def run_setup_ai_ml_environment(root, canvas):
+    if not is_python_installed():
+        messagebox.showinfo(
+            "Python Not Found",
+            "Python is not installed. Please install Python first. Redirecting to installation page...",
+        )
+        webbrowser.open(PYTHON_DOWNLOAD_LINK)
+        messagebox.showinfo(
+            "How to video", "Here is a short video on how to install Python."
+        )
+        if os.name == "nt":
+            webbrowser.open(INSTALL_PYTHON_VIDEO_WIN)
+        else:
+            webbrowser.open(INSTALL_PYTHON_VIDEO_MAC)
+        messagebox.showinfo(
+            "Re-try", "Click this button again after installing Python."
+        )
+        return
+    
     set_widgets_state(root, "disabled")
     show_loading_overlay(canvas, "Setting up AI environment...")
 
     setup_ai_ml_environment()
-
+    
     hide_loading_overlay(canvas)
     set_widgets_state(root, "normal")
 
@@ -248,14 +270,14 @@ def install_python_and_pygame():
             "Python Not Found",
             "Python is not installed. Redirecting to installation page...",
         )
-        webbrowser.open("https://www.python.org/downloads/")
+        webbrowser.open(PYTHON_DOWNLOAD_LINK)
         messagebox.showinfo(
             "How to video", "Here is a short video on how to install Python."
         )
         if os.name == "nt":
-            webbrowser.open("https://www.youtube.com/watch?v=cTwD_LC5F9A")
+            webbrowser.open(INSTALL_PYTHON_VIDEO_WIN)
         else:
-            webbrowser.open("https://www.youtube.com/watch?v=YigK5HwxV3M")
+            webbrowser.open(INSTALL_PYTHON_VIDEO_MAC)
 
 
 def is_python_installed():
