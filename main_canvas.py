@@ -261,6 +261,45 @@ def check_unreal_engine_compatibility(detail_button, detail_widget, test_mode=Fa
     detail_widget.config(state=tk.DISABLED)
 
     detail_button.pack(pady=10)
+    
+def offer_vscode_extensions():
+    exe = find_vscode_executable()
+    if not exe:
+        return
+    # If 'code' is on PATH, prefer it for CLI operations
+    code_cli = shutil.which("code") or exe
+
+    if messagebox.askyesno("VS Code Extensions", "Install the Python extension for VS Code?"):
+        try:
+            # Works when 'code' CLI is available; if exe path is Code.exe, it also accepts '--install-extension'
+            subprocess.run([code_cli, "--install-extension", "ms-python.python"], check=True)
+            messagebox.showinfo("VS Code", "Python extension installed.")
+        except subprocess.CalledProcessError:
+            messagebox.showwarning("VS Code", "Could not install extension automatically.")
+    
+
+def run_install_vscode(root, canvas):
+    set_widgets_state(root, "disabled")
+    show_loading_overlay(canvas, "Installing VSCode & Extensions...")
+    
+    exe = ensure_vscode_available()
+    if exe:
+        messagebox.showinfo("VS Code", "Visual Studio Code is installed and ready to use!")
+        offer_vscode_extensions()
+        hide_loading_overlay(canvas)
+        set_widgets_state(root, "normal")
+        return
+
+    # Fallback for non-Windows or if Winget failed/unavailable
+    messagebox.showinfo(
+        "VS Code Not Installed",
+        "Automatic install is unavailable. Redirecting to the official download page..."
+    )
+    webbrowser.open("https://code.visualstudio.com/download")
+    
+    hide_loading_overlay(canvas)
+    set_widgets_state(root, "normal")
+
 
 
 def run_setup_ai_ml_environment(root, canvas):
@@ -354,6 +393,10 @@ def run_install_python_and_pygame(root, canvas):
 
     hide_loading_overlay(canvas)
     set_widgets_state(root, "normal")
+    
+    if messagebox.askyesno("VSCode", "Would you like to install Visual Studio Code as well?"):
+        run_install_vscode(root, canvas)
+        
 
 
 def install_python_and_pygame():
@@ -616,7 +659,7 @@ def create_gui():
     # Load in the font for TK (??SUPER WEIRD??)
     mon_font = Font(file=resource_path("fonts/Montserrat-Black.ttf"))
 
-    canvas = tk.Canvas(frame, bg="white", width=720, height=280, highlightthickness=0)
+    canvas = tk.Canvas(frame, bg="white", width=720, height=380, highlightthickness=0)
     canvas.pack()
 
     create_multiline_button(
@@ -662,6 +705,21 @@ def create_gui():
         "#3CFF8F",
         35,
     )
+    
+    create_multiline_button(
+        canvas,
+        20,
+        280,
+        ["Visual Studio Code & Plugins", "              Installation >"],
+        ["#FFFFFF", "#000040"],
+        [("Montserrat Black", 24), ("Montserrat Black", 18)],
+        lambda: run_install_vscode(root, canvas),
+        673,
+        85,
+        "#A43CFF",
+        35,
+    )
+    
 
     detail_widget = scrolledtext.ScrolledText(
         frame, wrap=tk.WORD, width=60, height=15, state=tk.DISABLED
