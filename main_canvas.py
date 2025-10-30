@@ -333,7 +333,6 @@ def run_setup_ai_ml_environment(root, canvas):
     hide_loading_overlay(canvas)
     set_widgets_state(root, "normal")
     
-    show_restart_screen(root, canvas, "AI environment")
 
 
 def setup_ai_ml_environment():
