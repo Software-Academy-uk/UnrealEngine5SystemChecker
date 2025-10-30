@@ -140,7 +140,7 @@ def install_vscode_with_winget(scope="user"):
         "-e", "--id", "Microsoft.VisualStudioCode",
         "--accept-package-agreements", "--accept-source-agreements",
         "--scope", scope,
-        "--silent"
+        #"--silent"
     ]
 
     messagebox.showinfo(
@@ -149,13 +149,14 @@ def install_vscode_with_winget(scope="user"):
         "You may see a Windows prompt."
     )
     ok, out = _run(cmd)
-    if not ok:
-        # Retry without --silent; some environments/older App Installer versions reject it
-        cmd2 = [c for c in cmd if c != "--silent"]
-        ok2, out2 = _run(cmd2)
-        ok, out = ok2, out2
+    # if not ok:
+    #     # Retry without --silent; some environments/older App Installer versions reject it
+    #     cmd2 = [c for c in cmd if c != "--silent"]
+    #     ok2, out2 = _run(cmd2)
+    #     ok, out = ok2, out2
 
     if ok:
+        
         # Give PATH shims a moment to appear, then re-check
         for _ in range(6):
             time.sleep(2)
@@ -285,9 +286,10 @@ def run_install_vscode(root, canvas):
     exe = ensure_vscode_available()
     if exe:
         messagebox.showinfo("VS Code", "Visual Studio Code is installed and ready to use!")
-        offer_vscode_extensions()
+        #offer_vscode_extensions()
         hide_loading_overlay(canvas)
         set_widgets_state(root, "normal")
+        show_restart_screen(root, canvas, "VSCode")
         return
 
     # Fallback for non-Windows or if Winget failed/unavailable
@@ -299,6 +301,8 @@ def run_install_vscode(root, canvas):
     
     hide_loading_overlay(canvas)
     set_widgets_state(root, "normal")
+    
+    
 
 
 
@@ -328,6 +332,8 @@ def run_setup_ai_ml_environment(root, canvas):
     
     hide_loading_overlay(canvas)
     set_widgets_state(root, "normal")
+    
+    show_restart_screen(root, canvas, "AI environment")
 
 
 def setup_ai_ml_environment():
@@ -383,6 +389,17 @@ def setup_ai_ml_environment():
         messagebox.showerror(
             "Installation Error", "Failed to install packages from ai_requirements.txt."
         )
+        
+        
+def show_restart_screen(root, canvas, package):
+    set_widgets_state(root, "disabled")
+    r = range(5)
+    for i in r:
+        show_loading_overlay(canvas, f"{package} installed, closing in.. {len(r) - i}\nRe-open to continue")
+        time.sleep(1)
+    sys.exit()
+    
+    
 
 
 def run_install_python_and_pygame(root, canvas):
@@ -394,8 +411,10 @@ def run_install_python_and_pygame(root, canvas):
     hide_loading_overlay(canvas)
     set_widgets_state(root, "normal")
     
-    if messagebox.askyesno("VSCode", "Would you like to install Visual Studio Code as well?"):
-        run_install_vscode(root, canvas)
+    show_restart_screen(root, canvas, "Python")
+    
+    # if messagebox.askyesno("VSCode", "Would you like to install Visual Studio Code as well?"):
+    #     install_vscode_with_winget()
         
 
 
